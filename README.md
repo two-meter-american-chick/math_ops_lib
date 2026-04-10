@@ -1,35 +1,72 @@
 ﻿# Math Ops C Library
 
-Небольшая C-библиотека с 10 математическими функциями.
+Math library in C for linear algebra and calculus-related operations.
 
-## Функции
+## Project structure
 
-1. `mo_add` - сложение
-2. `mo_subtract` - вычитание
-3. `mo_multiply` - умножение
-4. `mo_divide` - деление с проверкой деления на ноль
-5. `mo_power` - возведение в целую степень
-6. `mo_abs` - модуль числа
-7. `mo_sqrt` - квадратный корень (метод Ньютона)
-8. `mo_factorial` - факториал с проверкой переполнения
-9. `mo_gcd` - НОД
-10. `mo_lcm` - НОК
+- `include/math_ops.h` - single public API facade.
+- `src/mo_scalar.c` - scalar operations.
+- `src/mo_matrix.c` - fixed-size matrix operations.
+- `src/mo_memory.c` - dynamic memory matrix operations.
+- `src/mo_common.c` + `src/mo_common.h` - shared validation/error layer.
 
-## Сборка
+## Error codes
+
+- `MO_OK` (0) - success.
+- `MO_ERR_NULL_PTR` (-1) - null pointer.
+- `MO_ERR_INVALID_ARG` (-2) - invalid argument/domain.
+- `MO_ERR_OVERFLOW` (-3) - arithmetic/size overflow.
+- `MO_ERR_ALLOC` (-4) - allocation failure.
+
+## API overview
+
+### Scalar functions (10)
+
+`mo_add`, `mo_subtract`, `mo_multiply`, `mo_divide`, `mo_power`, `mo_abs`, `mo_sqrt`, `mo_factorial`, `mo_gcd`, `mo_lcm`
+
+### Matrix fixed-size functions (5)
+
+`mo_matrix_multiply_2x2`, `mo_matrix_multiply_3x3`, `mo_matrix_determinant_3x3`, `mo_matrix_inverse_2x2`, `mo_solve_linear_2x2`
+
+### Dynamic memory functions (5)
+
+`mo_matrix_alloc`, `mo_matrix_free`, `mo_matrix_fill`, `mo_matrix_copy`, `mo_matrix_multiply_dyn`
+
+All matrices use row-major layout.
+
+## Build with CMake
 
 ```bash
 cmake -S . -B build
 cmake --build build
 ```
 
-## Пример запуска
+## Build DLL on Windows (MSVC Build Tools)
 
-```bash
-./build/math_ops_demo
+```cmd
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat" && cl /nologo /LD /DMO_BUILD_DLL /I include src\mo_common.c src\mo_scalar.c src\mo_matrix.c src\mo_memory.c /link /OUT:math_ops.dll
 ```
 
-На Windows:
+## Run demo
 
 ```powershell
 .\build\Debug\math_ops_demo.exe
 ```
+
+## Tests
+
+### C unit tests
+
+```powershell
+.\build\Debug\math_ops_c_tests.exe
+```
+
+### Python integration tests (ctypes)
+
+```powershell
+C:\Users\Вадим\AppData\Local\Programs\Python\Python312\python.exe test_math_ops.py
+```
+
+### Strict Jupyter notebook (native DLL only)
+
+`math_ops_examples.ipynb`
